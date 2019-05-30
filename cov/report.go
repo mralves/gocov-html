@@ -23,7 +23,6 @@ package cov
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/axw/gocov"
 	"io"
 	"io/ioutil"
 	"os"
@@ -31,6 +30,8 @@ import (
 	"sort"
 	"text/tabwriter"
 	"time"
+
+	"github.com/axw/gocov"
 )
 
 func unmarshalJson(data []byte) (packages []*gocov.Package, err error) {
@@ -253,6 +254,10 @@ func exists(path string) (bool, error) {
 // is an absolute path to a custom stylesheet. Use an empty
 // string to use the default stylesheet available.
 func HTMLReportCoverage(r io.Reader, css string) error {
+	return HTMLReportCoverageWithOutput(r, css, os.Stdout)
+}
+
+func HTMLReportCoverageWithOutput(r io.Reader, css string, o io.Writer) error {
 	report := newReport()
 
 	// Custom stylesheet?
@@ -278,7 +283,6 @@ func HTMLReportCoverage(r io.Reader, css string) error {
 	for _, pkg := range packages {
 		report.addPackage(pkg)
 	}
-	fmt.Println()
-	printReport(os.Stdout, report)
+	printReport(o, report)
 	return nil
 }
